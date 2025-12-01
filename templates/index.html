@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mb-6 flex justify-between items-center">
+  <h1 class="text-2xl font-semibold">All Posts</h1>
+
+  <form action="/search" method="get" class="flex items-center space-x-2">
+    <input type="text" name="q" placeholder="Search posts..."
+           class="bg-[#071024] text-gray-200 placeholder-gray-500 px-3 py-2 rounded-md border border-[#111827]">
+    <button class="px-3 py-2 rounded-md bg-[#0f1724] text-[#7ee7c3]">Search</button>
+  </form>
+</div>
+
+{% if posts|length == 0 %}
+  <div class="glass p-6 rounded-lg text-gray-300">No posts yet.</div>
+{% else %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    {% for post in posts %}
+      <a href="/post/{{ post.id }}" class="block glass rounded-lg overflow-hidden">
+        <img src="{{ post.image_path }}" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h2 class="text-lg font-semibold">{{ post.title }}</h2>
+          <p class="text-sm text-gray-400 mt-2 line-clamp-3">{{ post.content }}</p>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}
