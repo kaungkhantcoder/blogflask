@@ -3,24 +3,17 @@
 
 <div class="mb-4 flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Search results for "{{ q }}"</h1>
-  <a href="/" class="text-sm text-gray-400">Back</a>
+  <a href="/" class="text-md w- text-black rounded-xl py-2 px-3 bg-white">Back</a>
 </div>
 
 {% if posts|length == 0 %}
-  <div class="glass p-6 rounded-lg text-gray-300">
-    No results.
-  </div>
+    <div class="w-full bg-[#2b2b2b] border border-white/20 p-6 rounded-lg text-gray-300">No Results</div>
+
 {% else %}
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
     {% for post in posts %}
-      <a href="/post/{{ post.id }}" class="block glass rounded-lg overflow-hidden">
-        {% if post.image_url %}
-          <img src="{{ post.image_url }}" alt="" class="w-full h-48 object-cover" />
-        {% elif post.image_data %}
-          <img src="data:image/jpeg;base64,{{ post.image_data }}" alt="" class="w-full h-48 object-cover" />
-        {% else %}
-          <div class="w-full h-48 bg-[#0a1220] flex items-center justify-center text-gray-500">No image</div>
-        {% endif %}
+      <a href="/post/{{ post.id }}" class="block bg-[#383838] rounded-lg overflow-hidden">
+          <img src="{{ post.image_path }}" alt="" class="w-full h-48 object-cover" />
 
         <div class="p-4">
           <h2 class="text-lg font-semibold text-white">{{ post.title }}</h2>

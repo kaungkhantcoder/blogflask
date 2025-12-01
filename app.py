@@ -1,9 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
-app.secret_key = "dev-secret-key"
 
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -29,7 +28,7 @@ def search():
 def post_single(id):
     post = next((p for p in posts if p["id"] == id), None)
     if not post:
-        flash("Post not found.")
+
         return redirect(url_for("index"))
     return render_template("post.html", post=post, active=None)
 
@@ -44,11 +43,11 @@ def create():
         uploaded_file = request.files.get("photo")
 
         if not title:
-            flash("Title is required.")
+
             return render_template("form.html", mode="create", post=None, active="create")
 
         if not uploaded_file or uploaded_file.filename == "":
-            flash("Please upload an image.")
+
             return render_template("form.html", mode="create", post=None, active="create")
 
         filename = secure_filename(uploaded_file.filename)
@@ -82,7 +81,7 @@ def create():
 def edit(id):
     post = next((p for p in posts if p["id"] == id), None)
     if not post:
-        flash("Post not found.")
+
         return redirect(url_for("index"))
 
     if request.method == "POST":
@@ -91,7 +90,7 @@ def edit(id):
         uploaded_file = request.files.get("photo")
 
         if not title:
-            flash("Title is required.")
+
             return render_template("form.html", mode="edit", post=post, active="create")
 
         post["title"] = title
@@ -121,7 +120,7 @@ def edit(id):
 def delete(id):
     global posts
     posts = [p for p in posts if p["id"] != id]
-    flash("Post deleted.")
+
     return redirect(url_for("index"))
 
 

@@ -1,5 +1,6 @@
-Small CRUD Blog App
+# Small CRUD Blog App
 
+```
 .
 ├── app.py
 ├── Procfile
@@ -14,3 +15,4 @@ Small CRUD Blog App
     └── search.html
 
 4 directories, 8 files
+```
