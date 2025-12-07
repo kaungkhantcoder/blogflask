@@ -9,9 +9,13 @@ load_dotenv()
 
 app.secret_key = os.getenv('serect-key')
 
-UPLOAD_FOLDER = "static/uploads"
+UPLOAD_FOLDER = "static/uploads/image"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# app.config["UPLOAD_FOLDER"] = 'static/uploads/image'
+app.config["AUDIO_UPLOAD_FOLDER"] = 'static/uploads/audio'
 
 posts = []
 post_id_counter = 1
@@ -21,6 +25,9 @@ post_id_counter = 1
 def index():
     return render_template("index.html", posts=posts, active="home")
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("notfound.html"), 404
 
 @app.route("/search")
 def search():
@@ -45,35 +52,52 @@ def create():
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         content = request.form.get("content", "").strip()
-        uploaded_file = request.files.get("photo")
+        image_file = request.files.get("photo")
+        audio_file = request.files.get("audio")
+
+        photo_url = None
+        audio_url = None
 
         if not title:
             flash("Title is required.")
             return render_template("form.html", mode="create", post=None, active="create")
 
-        if not uploaded_file or uploaded_file.filename == "":
+        if not image_file or image_file.filename == "":
             flash("Please upload an image.")
 
             return render_template("form.html", mode="create", post=None, active="create")
+        
+        if image_file and image_file.filename != "":
+            image_name = secure_filename(image_file.filename)
+            img_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+            image_file.save(img_path)
+            photo_url = f"/static/uploads/image/{image_name}"
 
-        filename = secure_filename(uploaded_file.filename)
-        save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        # filename = secure_filename(uploaded_file.filename)
+        # save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-        counter = 1
-        original_name = filename
-        while os.path.exists(save_path):
-            name, ext = os.path.splitext(original_name)
-            filename = f"{name}_{counter}{ext}"
-            save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-            counter += 1
+        if audio_file and audio_file.filename != "":
+            audio_name = secure_filename(audio_file.filename)
+            audio_path = os.path.join(app.config['AUDIO_UPLOAD_FOLDER'], audio_name)
+            audio_file.save(audio_path)
+            audio_url = f"/static/uploads/audio/{audio_name}"
 
-        uploaded_file.save(save_path)
+        # counter = 1
+        # original_name = filename
+        # while os.path.exists(save_path):
+        #     name, ext = os.path.splitext(original_name)
+        #     filename = f"{name}_{counter}{ext}"
+        #     save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        #     counter += 1
+
+        # uploaded_file.save(save_path)
 
         post = {
             "id": post_id_counter,
             "title": title,
             "content": content,
-            "image_path": f"/static/uploads/{filename}",
+            "image_path": photo_url,
+            "audio_url": audio_url
         }
         posts.append(post)
         post_id_counter += 1
@@ -94,6 +118,7 @@ def edit(id):
         title = request.form.get("title", "").strip()
         content = request.form.get("content", "").strip()
         uploaded_file = request.files.get("photo")
+        audio_file = request.files.get("audio")
 
         if not title:
             flash("Title is required.")
@@ -101,6 +126,12 @@ def edit(id):
 
         post["title"] = title
         post["content"] = content
+
+        if audio_file and audio_file.filename != "":
+            audio_name = secure_filename(audio_file.filename)
+            audio_path = os.path.join(app.config['AUDIO_UPLOAD_FOLDER'], audio_name)
+            audio_file.save(audio_path)
+            post["audio_url"] = f"/static/uploads/audio/{audio_name}"
 
         if uploaded_file and uploaded_file.filename != "":
             filename = secure_filename(uploaded_file.filename)
@@ -115,7 +146,7 @@ def edit(id):
                 counter += 1
 
             uploaded_file.save(save_path)
-            post["image_path"] = f"/static/uploads/{filename}"
+            post["image_path"] = f"/static/uploads/image/{filename}"
 
         return redirect(url_for("post_single", id=id))
 

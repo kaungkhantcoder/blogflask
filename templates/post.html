@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- Delete Confirmation Modal -->
 <div id="confirm-delete"
      class="fixed inset-0 bg-black/60 backdrop-blur-md flex justify-center items-center opacity-0 pointer-events-none transition duration-300">
 
@@ -8,19 +9,21 @@
         <h2 class="text-xl font-bold text-red-400 mb-4">Delete Post?</h2>
 
         <p class="text-gray-300 text-sm mb-6">
-            Are you sure you want to delete [ {{ post.title }} ]?
+            Are you sure you want to delete “{{ post.title }}”?
         </p>
 
         <div class="flex space-x-4">
 
+            <!-- YES Delete -->
             <form action="/delete/{{ post.id }}" method="post" class="w-1/2">
                 <button class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-md">
                     Yes
                 </button>
             </form>
 
+            <!-- Cancel -->
             <a href="/post/{{ post.id }}" class="w-1/2">
-                <div class="bg-black hover:bg-black/50 py-2 rounded-md text-center">
+                <div class="bg-[#2a2a2a] hover:bg-[#333] py-2 rounded-md text-center">
                     Cancel
                 </div>
             </a>
@@ -28,9 +31,7 @@
     </div>
 </div>
 
-
 <style>
-
 #confirm-delete:target {
     opacity: 1;
     pointer-events: auto;
@@ -41,24 +42,62 @@
 }
 </style>
 
-<div class="flex overflow-hidden bg-[#383838]">
-  <img src="{{ post.image_path }}" class="w-[20rem] h-[20rem] object-cover">
 
-  <div class="p-6">
-    <h1 class="text-2xl font-bold">{{ post.title }}</h1>
-    <p class="mt-4 text-gray-300 whitespace-pre-line">{{ post.content }}</p>
+<!-- Post Container -->
+<div class="max-w-4xl mx-auto mt-5 p-6">
 
-    <div class="mt-6 flex space-x-4">
-      <form>
-        <a href="/edit/{{ post.id }}" class="px-4 py-2 rounded-md bg-white text-black">Edit</a>
-      </form>
-      
+    <!-- Image -->
+    {% if post.image_path %}
+    <img src="{{ post.image_path }}"
+         class="w-full h-72 md:h-[28rem] object-cover rounded-xl shadow-lg border border-white/10">
+    {% endif %}
 
-      <form action="/delete/{{ post.id }}" method="post">
-        <a href="#confirm-delete" class="px-4 py-2 rounded-md bg-black text-white">Delete</a>
-      </form>
+    <!-- Audio -->
+    {% if post.audio_url %}
+    <div class="mt-6">
+        <audio controls class="w-full rounded-lg bg-[#000]">
+            <source src="{{ post.audio_url }}" type="audio/mpeg">
+            Your browser does not support audio playback.
+        </audio>
     </div>
-  </div>
+    {% endif %}
+
+    <!-- Title -->
+    <h1 class="text-3xl md:text-4xl font-bold mt-8 text-white leading-tight">
+        {{ post.title }}
+    </h1>
+
+    <!-- Content -->
+    <p class="mt-4 text-gray-300 whitespace-pre-line text-lg leading-relaxed">
+        {{ post.content }}
+    </p>
+
+    <!-- Buttons -->
+    <div class="mt-10 flex justify-between gap-4">
+
+        <!-- Back Button -->
+        <a href="/"
+           class="px-4 md:px-6 py-2 rounded-lg bg-white/10 text-gray-300 hover:bg-white/20 transition">
+            Back
+        </a>
+
+        <div class="flex gap-4">
+          <!-- Edit Button -->
+          <a href="/edit/{{ post.id }}"
+           class="px-4 md:px-6 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">
+            Edit
+          </a>
+
+          <!-- Delete Button -->
+          <a href="#confirm-delete"
+           class="px-4 md:px-6 py-2 rounded-lg bg-white/10 border border-red-500 text-white hover:bg-red-700 transition">
+            Delete
+          </a>
+
+        </div>
+
+
+    </div>
 </div>
 
 {% endblock %}
