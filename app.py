@@ -156,23 +156,42 @@ def edit(id):
         post.title = title
         post.content = content
 
+        # Replace audio
+
         if audio_file and audio_file.filename != "":
+
+            # delete old audio
+            if post.audio_url:
+                old_audio_path = os.path.join(app.root_path, post.audio_url.lstrip("/"))
+                if os.path.exists(old_audio_path):
+                    os.remove(old_audio_path)
+
             audio_name = secure_filename(audio_file.filename)
             audio_path = os.path.join(app.config['AUDIO_UPLOAD_FOLDER'], audio_name)
             audio_file.save(audio_path)
             post.audio_url = f"/static/uploads/audio/{audio_name}"
 
+        
+        # Replace image
+
         if uploaded_file and uploaded_file.filename != "":
+
+            # delete old image
+            if post.image_path:
+                old_image_path = os.path.join(app.root_path, post.image_path.lstrip("/"))
+                if os.path.exists(old_image_path):
+                    os.remove(old_image_path)
+
             filename = secure_filename(uploaded_file.filename)
             save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            counter = 1
-            original_name = filename
-            while os.path.exists(save_path):
-                name, ext = os.path.splitext(original_name)
-                filename = f"{name}_{counter}{ext}"
-                save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-                counter += 1
+            # counter = 1
+            # original_name = filename
+            # while os.path.exists(save_path):
+            #     name, ext = os.path.splitext(original_name)
+            #     filename = f"{name}_{counter}{ext}"
+            #     save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            #     counter += 1
 
             uploaded_file.save(save_path)
             post.image_path = f"/static/uploads/image/{filename}"
@@ -220,4 +239,4 @@ def delete(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
